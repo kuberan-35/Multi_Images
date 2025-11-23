@@ -1,0 +1,36 @@
+
+
+from PIL import Image, ImageDraw, ImageFont
+import os
+import zipfile
+import random
+
+# Use a directory for creating images, not the final zip file path
+base_path = r"D:\data science\Multiclass Fish Image Classification\fish_dataset"
+os.makedirs(base_path, exist_ok=True)
+
+categories = ["Salmon", "Tuna", "Trout", "Mackerel", "Sardine"]
+
+def create_image(text, save_path):
+    img = Image.new("RGB", (256, 256), color=(random.randint(0,255), random.randint(0,255), random.randint(0,255)))
+    d = ImageDraw.Draw(img)
+    d.text((10, 120), text, fill=(255,255,255))
+    img.save(save_path)
+
+# create folders and images
+for cat in categories:
+    folder = os.path.join(base_path, cat)
+    os.makedirs(folder, exist_ok=True)
+    for i in range(30):  # 30 sample images each
+        create_image(cat, os.path.join(folder, f"{cat}_{i}.jpg"))
+
+# zip the dataset (use this path only for the final zip file)
+zip_path = r"D:\data science\Multiclass Fish Image Classification\fish_dataset.zip"
+with zipfile.ZipFile(zip_path, "w") as z:
+    for root, _, files in os.walk(base_path):
+        for file in files:
+            full = os.path.join(root, file)
+            arcname = os.path.relpath(full, base_path)
+            z.write(full, arcname)
+
+zip_path
